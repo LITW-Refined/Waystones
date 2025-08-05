@@ -53,9 +53,9 @@ public class ItemWarpStone extends Item {
 		}
 		if (PlayerWaystoneData.canUseWarpStone(player)) {
 			if(PlayerWaystoneData.getLastWaystone(player) != null || !WaystoneManager.getServerWaystones().isEmpty()) {
-				if(!player.isUsingItem() && world.isRemote) {
-					Waystones.proxy.playSound("portal.trigger", 2f);
-				}
+				// if(!player.isUsingItem() && world.isRemote) {
+				// 	Waystones.proxy.playSound("portal.trigger", 2f);
+				// }
 				player.setItemInUse(itemStack, getMaxItemUseDuration(itemStack));
 			} else {
 				ChatComponentTranslation chatComponent = new ChatComponentTranslation("waystones:scrollNotBound");

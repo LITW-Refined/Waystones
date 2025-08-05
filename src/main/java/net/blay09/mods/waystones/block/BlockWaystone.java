@@ -119,18 +119,22 @@ public class BlockWaystone extends BlockContainer {
 
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float hitX, float hitY, float hitZ) {
-		if(player.isSneaking() && (player.capabilities.isCreativeMode || !Waystones.getConfig().creativeModeOnly)) {
-			if(world.isRemote) {
-				TileWaystone tileWaystone = getTileWaystone(world, x, y, z);
-				if(tileWaystone == null) {
-					return true;
-				}
-				//Waystones.proxy.openWaystoneNameEdit(tileWaystone);
-				Waystones.proxy.openWaystoneSelection(false);
+		if(world.isRemote) {
+			TileWaystone tileWaystone = getTileWaystone(world, x, y, z);
+			if(tileWaystone == null) {
+				return true;
 			}
-			return true;
-		}
-		if(!world.isRemote) {
+			if (player.isSneaking()) {
+				Waystones.proxy.openWaystoneNameEdit(tileWaystone);
+			} else {
+				Waystones.proxy.openWaystoneSelection(false);
+				// Waystones.proxy.playSound("random.levelup", 1f);
+				// for(int i = 0; i < 32; i++) {
+				// 	world.spawnParticle("enchantmenttable", x + 0.5 + (world.rand.nextDouble() - 0.5) * 2, y + 3, z + 0.5 + (world.rand.nextDouble() - 0.5) * 2, 0, -5, 0);
+				// 	world.spawnParticle("enchantmenttable", x + 0.5 + (world.rand.nextDouble() - 0.5) * 2, y + 4, z + 0.5 + (world.rand.nextDouble() - 0.5) * 2, 0, -5, 0);
+				// }
+			}
+		} else {
 			TileWaystone tileWaystone = getTileWaystone(world, x, y, z);
 			if(tileWaystone == null) {
 				return true;
@@ -144,12 +148,6 @@ public class BlockWaystone extends BlockContainer {
 			if(Waystones.getConfig().setSpawnPoint) {
 				ForgeDirection facing = ForgeDirection.getOrientation(world.getBlockMetadata(tileWaystone.xCoord, tileWaystone.yCoord, tileWaystone.zCoord));
 				player.setSpawnChunk(new ChunkCoordinates(tileWaystone.xCoord + facing.offsetX, tileWaystone.yCoord + facing.offsetY, tileWaystone.zCoord + facing.offsetZ), true);
-			}
-		} else {
-			Waystones.proxy.playSound("random.levelup", 1f);
-			for(int i = 0; i < 32; i++) {
-				world.spawnParticle("enchantmenttable", x + 0.5 + (world.rand.nextDouble() - 0.5) * 2, y + 3, z + 0.5 + (world.rand.nextDouble() - 0.5) * 2, 0, -5, 0);
-				world.spawnParticle("enchantmenttable", x + 0.5 + (world.rand.nextDouble() - 0.5) * 2, y + 4, z + 0.5 + (world.rand.nextDouble() - 0.5) * 2, 0, -5, 0);
 			}
 		}
 		return true;

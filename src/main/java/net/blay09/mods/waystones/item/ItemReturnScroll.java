@@ -52,9 +52,9 @@ public class ItemReturnScroll extends Item {
 	@Override
 	public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer player) {
 		if(PlayerWaystoneData.getLastWaystone(player) != null) {
-			if(!player.isUsingItem() && world.isRemote) {
-				Waystones.proxy.playSound("portal.trigger", 2f);
-			}
+			// if(!player.isUsingItem() && world.isRemote) {
+			// 	Waystones.proxy.playSound("portal.trigger", 2f);
+			// }
 			player.setItemInUse(itemStack, getMaxItemUseDuration(itemStack));
 		} else {
 			ChatComponentTranslation chatComponent = new ChatComponentTranslation("waystones:scrollNotBound");

@@ -16,7 +16,7 @@ public class HandlerTeleportEffect implements IMessageHandler<MessageTeleportEff
 			@Override
 			public void run() {
 				Minecraft mc = Minecraft.getMinecraft();
-				mc.getSoundHandler().playSound(PositionedSoundRecord.func_147674_a(new ResourceLocation("portal.travel"), 1f));
+				// mc.getSoundHandler().playSound(PositionedSoundRecord.func_147674_a(new ResourceLocation("portal.travel"), 1f));
 				for (int i = 0; i < 128; i++) {
 					mc.theWorld.spawnParticle("portal", message.getPos().getX() + (mc.theWorld.rand.nextDouble() - 0.5) * 3, message.getPos().getY() + mc.theWorld.rand.nextDouble() * 3, message.getPos().getZ() + (mc.theWorld.rand.nextDouble() - 0.5) * 3, (mc.theWorld.rand.nextDouble() - 0.5) * 2, -mc.theWorld.rand.nextDouble(), (mc.theWorld.rand.nextDouble() - 0.5) * 2);
 				}

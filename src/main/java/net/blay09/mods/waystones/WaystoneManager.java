@@ -1,11 +1,12 @@
 package net.blay09.mods.waystones;
 
-import com.google.common.collect.Maps;
-import cpw.mods.fml.common.network.NetworkRegistry;
+import java.util.Collection;
+import java.util.Map;
+
 import net.blay09.mods.waystones.block.TileWaystone;
+import net.blay09.mods.waystones.network.NetworkHandler;
 import net.blay09.mods.waystones.network.message.MessageTeleportEffect;
 import net.blay09.mods.waystones.network.message.MessageWaystones;
-import net.blay09.mods.waystones.network.NetworkHandler;
 import net.blay09.mods.waystones.util.BlockPos;
 import net.blay09.mods.waystones.util.WaystoneEntry;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,8 +23,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import java.util.Collection;
-import java.util.Map;
+import com.google.common.collect.Maps;
+
+import cpw.mods.fml.common.network.NetworkRegistry;
 
 public class WaystoneManager {
 
@@ -46,7 +48,14 @@ public class WaystoneManager {
     public static void sendPlayerWaystones(EntityPlayer player) {
         if (player instanceof EntityPlayerMP) {
             PlayerWaystoneData waystoneData = PlayerWaystoneData.fromPlayer(player);
-            NetworkHandler.channel.sendTo(new MessageWaystones(waystoneData.getWaystones(), getServerWaystones().toArray(new WaystoneEntry[getServerWaystones().size()]), waystoneData.getLastServerWaystoneName(), waystoneData.getLastFreeWarp(), waystoneData.getLastWarpStoneUse()), (EntityPlayerMP) player);
+            NetworkHandler.channel.sendTo(
+                new MessageWaystones(
+                    waystoneData.getWaystones(),
+                    getServerWaystones().toArray(new WaystoneEntry[getServerWaystones().size()]),
+                    waystoneData.getLastServerWaystoneName(),
+                    waystoneData.getLastFreeWarp(),
+                    waystoneData.getLastWarpStoneUse()),
+                (EntityPlayerMP) player);
         }
     }
 
@@ -62,7 +71,8 @@ public class WaystoneManager {
         NBTTagList tagList = tagCompound.getTagList(PlayerWaystoneData.WAYSTONE_LIST, Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < tagList.tagCount(); i++) {
             NBTTagCompound entryCompound = tagList.getCompoundTagAt(i);
-            if (WaystoneEntry.read(entryCompound).equals(waystone)) {
+            if (WaystoneEntry.read(entryCompound)
+                .equals(waystone)) {
                 tagList.removeTag(i);
                 return true;
             }
@@ -86,10 +96,12 @@ public class WaystoneManager {
         NBTTagList tagList = tagCompound.getTagList(PlayerWaystoneData.WAYSTONE_LIST, Constants.NBT.TAG_COMPOUND);
         for (int i = 0; i < tagList.tagCount(); i++) {
             NBTTagCompound entryCompound = tagList.getCompoundTagAt(i);
-            if (WaystoneEntry.read(entryCompound).equals(waystone)) {
+            if (WaystoneEntry.read(entryCompound)
+                .equals(waystone)) {
                 TileWaystone tileEntity = getWaystoneInWorld(waystone);
                 if (tileEntity != null) {
-                    if (!entryCompound.getString("Name").equals(tileEntity.getWaystoneName())) {
+                    if (!entryCompound.getString("Name")
+                        .equals(tileEntity.getWaystoneName())) {
                         entryCompound.setString("Name", tileEntity.getWaystoneName());
                         sendPlayerWaystones(player);
                     }
@@ -105,8 +117,15 @@ public class WaystoneManager {
     }
 
     public static TileWaystone getWaystoneInWorld(WaystoneEntry waystone) {
-        World targetWorld = MinecraftServer.getServer().worldServerForDimension(waystone.getDimensionId());
-        TileEntity tileEntity = targetWorld.getTileEntity(waystone.getPos().getX(), waystone.getPos().getY(), waystone.getPos().getZ());
+        World targetWorld = MinecraftServer.getServer()
+            .worldServerForDimension(waystone.getDimensionId());
+        TileEntity tileEntity = targetWorld.getTileEntity(
+            waystone.getPos()
+                .getX(),
+            waystone.getPos()
+                .getY(),
+            waystone.getPos()
+                .getZ());
         if (tileEntity instanceof TileWaystone) {
             return (TileWaystone) tileEntity;
         }
@@ -120,17 +139,23 @@ public class WaystoneManager {
     public static boolean teleportToWaystone(EntityPlayer player, WaystoneEntry waystone) {
         if (!checkAndUpdateWaystone(player, waystone)) {
             ChatComponentTranslation chatComponent = new ChatComponentTranslation("waystones:waystoneBroken");
-            chatComponent.getChatStyle().setColor(EnumChatFormatting.RED);
+            chatComponent.getChatStyle()
+                .setColor(EnumChatFormatting.RED);
             player.addChatComponentMessage(chatComponent);
             return false;
         }
         WaystoneEntry serverEntry = getServerWaystone(waystone.getName());
-        World targetWorld = MinecraftServer.getServer().worldServerForDimension(waystone.getDimensionId());
-        int x = waystone.getPos().getX();
-        int y = waystone.getPos().getY();
-        int z = waystone.getPos().getZ();
+        World targetWorld = MinecraftServer.getServer()
+            .worldServerForDimension(waystone.getDimensionId());
+        int x = waystone.getPos()
+            .getX();
+        int y = waystone.getPos()
+            .getY();
+        int z = waystone.getPos()
+            .getZ();
         ForgeDirection facing = ForgeDirection.getOrientation(targetWorld.getBlockMetadata(x, y, z));
-        BlockPos targetPos = waystone.getPos().offset(facing);
+        BlockPos targetPos = waystone.getPos()
+            .offset(facing);
         boolean dimensionWarp = waystone.getDimensionId() != player.getEntityWorld().provider.dimensionId;
         if (dimensionWarp && !isDimensionWarpAllowed(waystone)) {
             player.addChatComponentMessage(new ChatComponentTranslation("waystones:noDimensionWarp"));
@@ -149,7 +174,9 @@ public class WaystoneManager {
     }
 
     public static void sendTeleportEffect(World world, BlockPos pos) {
-        NetworkHandler.channel.sendToAllAround(new MessageTeleportEffect(pos), new NetworkRegistry.TargetPoint(world.provider.dimensionId, pos.getX(), pos.getY(), pos.getZ(), 64));
+        NetworkHandler.channel.sendToAllAround(
+            new MessageTeleportEffect(pos),
+            new NetworkRegistry.TargetPoint(world.provider.dimensionId, pos.getX(), pos.getY(), pos.getZ(), 64));
     }
 
     public static float getRotationYaw(ForgeDirection facing) {
